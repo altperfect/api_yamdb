@@ -23,6 +23,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'api',
+    'reviews',
+    'comments',
 ]
 
 MIDDLEWARE = [
@@ -103,3 +105,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
+
+
+REVIEW_CUT: int = 50
+COMMENT_CUT: int = 30
