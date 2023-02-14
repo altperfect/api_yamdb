@@ -8,8 +8,6 @@ class UserAdmin(admin.ModelAdmin):
         'id',
         'username',
         'email',
-        'first_name',
-        'last_name',
         'bio',
         'role',
     )
@@ -18,4 +16,4 @@ class UserAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
-admin.site.register(User)
+admin.site.register(User, UserAdmin)
