@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from users.models import User
 from users.serializers import UserSerializer
 
-from .permissions import IsAdmin
+from api.permissions import IsAdmin
 
 
 class UserViewSet(viewsets.ModelViewSet):
