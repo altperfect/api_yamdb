@@ -11,6 +11,19 @@ class IsAdmin(permissions.BasePermission):
         return request.user.is_admin or request.user.is_superuser
 
 
+class IsAdminOrReadOnly(permissions.BasePermission):
+    """
+    Проверка пользователя на наличие прав администратора
+    для создания и редактирования записей.
+    Если прав админа нет, то доступен только просмотр.
+    """
+    def has_permission(self, request, view):
+        return (
+            request.mathod in permissions.SAFE_METHODS
+            or request.user.is_admin
+        )
+
+
 class IsAdminModeratorAuthor(permissions.BasePermission):
     """
     Проверка пользователя на наличие одного из типов прав:

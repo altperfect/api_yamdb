@@ -1,14 +1,29 @@
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 
 from api.permissions import IsAdminModeratorAuthor
+from application.models import Title
 from comments.serializers import CommentSerializer
-from reviews.models import Review, Title
+from reviews.models import Review
 from reviews.serializers import ReviewSerializer
 
 
+class Title(viewsets.ModelViewSet):
+    """
+    Создание и обработка произведений.
+    Права доступа: Админ создёт и редактирует, остальные read only.
+    """
+    queryset = Title.objects.annotate(
+        review_raiting=Avg('reviews__score')
+    ).all()
+
+
 class CommentViewSet(viewsets.ModelViewSet):
-    """Создание и обработка комментариев."""
+    """
+    Создание и обработка комментариев.
+    Права доступа: Админ, Модератор, Автор.
+    """
     serializer_class = CommentSerializer
     permission_classes = (IsAdminModeratorAuthor,)
 
@@ -21,7 +36,10 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    """Создание и обработка отзывов."""
+    """
+    Создание и обработка отзывов.
+    Права доступа: Админ, Модератор, Автор.
+    """
     serializer_class = ReviewSerializer
     permission_classes = (IsAdminModeratorAuthor,)
 
