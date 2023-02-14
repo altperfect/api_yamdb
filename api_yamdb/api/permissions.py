@@ -9,3 +9,37 @@ class IsAdmin(permissions.BasePermission):
         if request.user.is_anonymous:
             return False
         return request.user.is_admin or request.user.is_superuser
+
+
+class IsAdminOrReadOnly(permissions.BasePermission):
+    """
+    Проверка пользователя на наличие прав администратора
+    для создания и редактирования записей.
+    Если прав админа нет, то доступен только просмотр.
+    """
+    def has_permission(self, request, view):
+        return (
+            request.mathod in permissions.SAFE_METHODS
+            or request.user.is_admin
+        )
+
+
+class IsAdminModeratorAuthor(permissions.BasePermission):
+    """
+    Проверка пользователя на наличие одного из типов прав:
+    администратора, модератора или автора.
+    """
+    def has_permission(self, request, view):
+        return (
+            request.method in permissions.SAFE_METHODS
+            or request.user.is_authenticated
+        )
+
+    def has_object_permission(self, request, view, obj):
+        return (
+            request.method in permissions.SAFE_METHODS
+            or obj.author == request.user
+            or request.user.is_moderator
+            or request.user.is_admin
+            or request.user.is_superuser
+        )

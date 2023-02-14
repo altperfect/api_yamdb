@@ -22,6 +22,8 @@ INSTALLED_APPS = [
     'django_filters',
     'api',
     'users'
+    'reviews',
+    'comments'
 ]
 
 MIDDLEWARE = [
@@ -126,3 +128,6 @@ SIMPLE_JWT = {
 AUTH_USER_MODEL = "users.User"
 
 DEBUG_MAIL = "debug@debug.com"
+
+REVIEW_CUT: int = 50
+COMMENT_CUT: int = 30
