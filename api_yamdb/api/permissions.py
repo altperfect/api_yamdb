@@ -2,6 +2,7 @@ from rest_framework import permissions
 
 
 class IsAdmin(permissions.BasePermission):
+    """Проверка пользователя на наличие прав администратора."""
     message = "Пользователь не администратор."
 
     def has_permission(self, request, view):
