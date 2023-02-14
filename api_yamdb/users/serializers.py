@@ -1,7 +1,10 @@
 from rest_framework import serializers
 
-from .models import User
-from .validators import me_username_forbidden_validator, username_validator
+from users.models import User
+from users.validators import (
+    me_username_forbidden_validator,
+    username_validator
+)
 
 
 class SignUpSerializer(serializers.Serializer):
