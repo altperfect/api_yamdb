@@ -15,11 +15,16 @@ class ReviewSerializer(serializers.ModelSerializer):
     )
 
     def validate_score(self, value):
+        """Проверка оценки на соответствие 10-бальной шкале."""
         if 0 > value > 10:
             raise serializers.ValidationError(
                 'Оценка должна быть по 10-бальной шкале!'
             )
         return value
+
+    def validate_review(self, data):
+        """Проверка отзыва. Создать можно только один отзыв."""
+        pass
 
     class Meta:
         fields = '__all__'

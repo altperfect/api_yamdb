@@ -2,12 +2,11 @@ from django.db import models
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 
-from comments.models import Comment
 from users.models import User
 from titles.models import Title
 
 
-class Review(models.Models):
+class Review(models.Model):
     """Модель для создания отзывов."""
     title = models.ForeignKey(
         Title,
@@ -35,7 +34,6 @@ class Review(models.Models):
     )
     text = models.TextField(
         max_length=1200,
-        allow_blank=True,
         verbose_name='Отзыв'
     )
     pub_date = models.DateField(
