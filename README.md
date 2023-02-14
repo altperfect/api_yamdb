@@ -146,10 +146,6 @@ GET api/v1/titles/{title_id}/reviews/{review_id}/comments/ - получение 
 GET api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/ - получение комментариия к отзыву по id
 
 GET api/v1/users/ - получение списка пользователей
-GET
-GET
-
-
 ```
 
 ### Запросы для **аутентифицированных пользователей**

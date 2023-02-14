@@ -6,7 +6,7 @@ from users.models import User
 
 
 class Comment(models.Model):
-    "#Модель для создания комментариев."
+    """Модель для создания комментариев."""
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

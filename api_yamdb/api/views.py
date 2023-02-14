@@ -3,9 +3,8 @@ from rest_framework import viewsets
 
 from api.permissions import IsAdminModeratorAuthor
 from comments.serializers import CommentSerializer
-from reviews.models import Review
+from reviews.models import Review, Title
 from reviews.serializers import ReviewSerializer
-from reviews.models import Title
 
 
 class CommentViewSet(viewsets.ModelViewSet):
