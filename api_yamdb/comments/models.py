@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 
 from reviews.models import Review
-from users.models import User
+# from users.models import User
 
 
 class Comment(models.Model):
@@ -23,7 +23,7 @@ class Comment(models.Model):
         max_length=400,
         verbose_name='Комментарий',
     )
-    pub_date = models.DateField(
+    pub_date = models.DateTimeField(
         auto_now_add=True,
         db_index=True,
         verbose_name='Дата добавления',

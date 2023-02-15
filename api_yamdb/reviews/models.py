@@ -2,8 +2,8 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from application.models import Title
-from users.models import User
+# from application.models import Title
+# from users.models import User
 
 
 class Review(models.Model):
@@ -36,7 +36,7 @@ class Review(models.Model):
         max_length=1200,
         verbose_name='Отзыв'
     )
-    pub_date = models.DateField(
+    pub_date = models.DateTimeField(
         auto_now_add=True,
         db_index=True,
         verbose_name='Дата добавления',

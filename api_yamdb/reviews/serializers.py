@@ -3,10 +3,7 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 
 from comments.models import Review
-from application.models import Title
-
-
-class Title
+# from application.models import Title
 
 
 class ReviewSerializer(serializers.ModelSerializer):

@@ -3,19 +3,23 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 
 from api.permissions import IsAdminModeratorAuthor
-from application.models import Title
+# from application.models import Title
 from comments.serializers import CommentSerializer
 from reviews.models import Review
 from reviews.serializers import ReviewSerializer
 
 
-class Title(viewsets.ModelViewSet):
+class TitleViewSet(viewsets.ModelViewSet):
     """
     Создание и обработка произведений.
     Права доступа: Админ создёт и редактирует, остальные read only.
     """
     queryset = Title.objects.annotate(
-        review_raiting=Avg('reviews__score')
+        rating=Avg("reviews__score")
+    ).select_related(
+        "category"
+    ).prefetch_related(
+        "genre"
     ).all()
 
 
