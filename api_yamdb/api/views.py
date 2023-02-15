@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
 
-from api.permissions import IsAdmin, IsAdminModeratorAuthor
+from api.permissions import IsAdmin, IsAdminModeratorAuthor, IsAdminOrReadOnly
 from api.serializers import (
     CategorySerializer,
     CommentSerializer,
@@ -25,14 +25,20 @@ from reviews.models import Category, Genre, Review, Title, User
 
 
 class GenreViewSet(viewsets.ModelViewSet):
-    """Вьюсет жанров."""
+    """
+    Получение списка жанров доступно без токена.
+    Админ создает и редактирует.
+    """
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (IsAdmin,)
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    """Вьюсет произведений."""
+    """
+    Получение списка произведений доступно без токена.
+    Админ создает и редактирует.
+    """
     queryset = Title.objects.annotate(
         review_rating=Avg('reviews__score'),
         rating=Avg("reviews__score")
@@ -42,14 +48,17 @@ class TitleViewSet(viewsets.ModelViewSet):
         "genre"
     ).all()
     serializer_class = TitleSerializer
-    permission_classes = (IsAdmin,)
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    """Вьюсет категорий."""
+    """
+    Получение списка категорий доступно без токена.
+    Админ создает и редактирует.
+    """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAdmin,)
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
