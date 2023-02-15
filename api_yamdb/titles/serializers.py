@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from django.utils import timezone
 from .models import Title, Category, Genre
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -13,14 +12,6 @@ class TitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
         fields = '__all__'
-    
-    def validate_year(self, value):
-        current_year = timezone.now().year
-        if not value <= current_year:
-            raise serializers.ValidationError(
-                'Проверьте дату создания произведения'
-            )
-        return value
 
 
 class CategorySerializer(serializers.ModelSerializer):

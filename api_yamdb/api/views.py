@@ -1,28 +1,40 @@
-from rest_framework import viewsets, permissions, status
-from django.shortcuts import get_object_or_404
-from api.permissions import IsAdmin
-from application.serializers import(
+from rest_framework import viewsets, permissions
+from api.permissions import IsAdminOrReadOnly
+from titles.serializers import(
     TitleSerializer,
     CategorySerializer,
     GenreSerializer)
-from application.models import Title, Category, Genre
+from titles.models import Title, Category, Genre
 
 class TitleViewSet(viewsets.ModelViewSet):
-    """Вьюсет произведений."""
+    """
+    Получение списка произведений доступно без токена.
+    Админ создает и редактирует.
+    """
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    permission_classes = (IsAdmin,)
+    permission_classes = (IsAdminOrReadOnly,)
 
+    def get_serializer(self):
+        if self.request.method not in permissions.SAFE_METHODS:
+            return TitleSerializer
+        return TitleSerializer
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    """Вьюсет категорий."""
+    """
+    Получение списка категорий доступно без токена.
+    Админ создает и редактирует.
+    """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAdmin,)
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class GenreViewSet(viewsets.ModelViewSet):
-    """Вьюсет жанров."""
+    """
+    Получение списка жанров доступно без токена.
+    Админ создает и редактирует.
+    """
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (IsAdmin,)
+    permission_classes = (IsAdminOrReadOnly,)
