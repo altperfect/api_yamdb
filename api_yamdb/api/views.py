@@ -11,7 +11,8 @@ from api.permissions import IsAdmin
 
 class UserViewSet(viewsets.ModelViewSet):
     """
-    Вьюсет пользователя.
+    Вьюсет для управления пользователями.
+    Доступ только у администратора.
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
