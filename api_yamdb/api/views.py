@@ -1,34 +1,66 @@
 from rest_framework import permissions, status, viewsets
-from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import AccessToken
 
+from django.conf import settings
+from django.core.mail import send_mail
+from django.db import IntegrityError
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 
-from application.models import Title
-from comments.serializers import CommentSerializer
-from reviews.models import Review
-from reviews.serializers import ReviewSerializer
-from users.models import User
-from users.serializers import UserSerializer
+from reviews.models import Category, Genre, Review, Title, User
 from api.permissions import IsAdmin
-from application.serializers import (
+from api.serializers import (
     TitleSerializer,
     CategorySerializer,
-    GenreSerializer)
-from application.models import Title, Category, Genre
+    GenreSerializer,
+    CommentSerializer,
+    ReviewSerializer,
+    UserSerializer,
+    SignUpSerializer,
+    TokenSerializer
+)
 
 from api.permissions import IsAdmin, IsAdminModeratorAuthor
+
+
+class GenreViewSet(viewsets.ModelViewSet):
+    """Вьюсет жанров."""
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = (IsAdmin,)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет произведений."""
     queryset = Title.objects.annotate(
-        review_raiting=Avg('reviews__score')
+        review_rating=Avg('reviews__score'),
+        rating=Avg("reviews__score")
+    ).select_related(
+        "category"
+    ).prefetch_related(
+        "genre"
     ).all()
     serializer_class = TitleSerializer
     permission_classes = (IsAdmin,)
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    """
+    Создание и обработка комментариев.
+    Права доступа: Админ, Модератор, Автор.
+    """
+    serializer_class = CommentSerializer
+    permission_classes = (IsAdminModeratorAuthor,)
+
+    def get_queryset(self):
+        return super().get_queryset.filter(id=self.kwargs.get('review_id'))
+
+    def perform_create(self, serializer):
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
+        serializer.save(author=self.request.user, review=review)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -66,3 +98,79 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = (SearchFilter,)
     http_method_names = ["get", "post", "delete", "patch"]
 
+
+class APISignUp(APIView):
+    """
+    Регистрация пользователя.
+    Анонимный пользователь отправляет 'username' и 'email' в формате JSON
+    и получает на почту код подтверждения.
+    """
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        serializer = SignUpSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        username = serializer.validated_data.get("username")
+        email = serializer.validated_data.get("email")
+
+        try:
+            user, created = User.objects.get_or_create(
+                username=username,
+                email=email
+            )
+        except IntegrityError:
+            return Response(
+                serializer.data, status=status.HTTP_400_BAD_REQUEST
+            )
+        else:
+            if created:
+                user.save()
+
+        self.send_confirmation(user, request.data.get("email"))
+        return Response(
+            serializer.validated_data,
+            status=status.HTTP_200_OK
+        )
+
+    def send_confirmation(self, user, email):
+        send_mail(
+            u"Код подтверждения для создания токена.",
+            f"Ваш код: {user.confirmation_code}",
+            settings.DEBUG_MAIL,
+            [email],
+            fail_silently=False,
+        )
+
+
+class APIObtainToken(APIView):
+    """Создание JWT-токена."""
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        serializer = TokenSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        username = serializer.validated_data.get("username")
+        confirmation_code = serializer.validated_data.get("confirmation_code")
+
+        if not User.objects.filter(username=username).exists():
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if not User.objects.filter(
+            confirmation_code=confirmation_code
+        ).exists():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        user = get_object_or_404(
+            User,
+            username=username,
+            confirmation_code=confirmation_code
+        )
+        token = AccessToken.for_user(user)
+        response = {
+            "token": str(token)
+        }
+        return Response(
+            response, status=status.HTTP_200_OK
+        )
