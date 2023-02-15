@@ -45,6 +45,13 @@ class TitleViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdmin,)
 
 
+class CategoryViewSet(viewsets.ModelViewSet):
+    """Вьюсет категорий."""
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsAdmin,)
+
+
 class CommentViewSet(viewsets.ModelViewSet):
     """
     Создание и обработка комментариев.
@@ -54,18 +61,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminModeratorAuthor,)
 
     def get_queryset(self):
-        return super().get_queryset.filter(id=self.kwargs.get('review_id'))
+        review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
+        return review.comments.all()
 
     def perform_create(self, serializer):
         review = get_object_or_404(Review, id=self.kwargs.get('review_id'))
         serializer.save(author=self.request.user, review=review)
-
-
-class CategoryViewSet(viewsets.ModelViewSet):
-    """Вьюсет категорий."""
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = (IsAdmin,)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -77,7 +78,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminModeratorAuthor,)
 
     def get_queryset(self):
-        return super().get_queryset.filter(id=self.kwargs.get('title_id'))
+        title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
+        return title.reviews.all()
 
     def perform_create(self, serializer):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))

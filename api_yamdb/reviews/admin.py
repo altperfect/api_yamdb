@@ -39,9 +39,6 @@ class CommentAdmin(admin.ModelAdmin):
     search_fields = ('author', 'review', 'text')
 
 
-# TODO: Genre, Category, Title
-
-
 admin.site.register(User, UserAdmin)
 admin.site.register(Review, ReviewAdmin)
 admin.site.register(Comment, CommentAdmin)
