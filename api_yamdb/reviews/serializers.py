@@ -1,9 +1,8 @@
-from rest_framework import serializers
+from application.models import Title
+from comments.models import Review
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
-
-from comments.models import Review
-from application.models import Title
+from rest_framework import serializers
 
 
 class Title

@@ -1,29 +1,26 @@
+from django.conf import settings
+from django.core.mail import send_mail
+from django.db import IntegrityError
+from django.db.models import Avg
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status, viewsets
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
 
-from django.conf import settings
-from django.core.mail import send_mail
-from django.db import IntegrityError
-from django.db.models import Avg
-from django.shortcuts import get_object_or_404
-
-from reviews.models import Category, Genre, Review, Title, User
-from api.permissions import IsAdmin
-from api.serializers import (
-    TitleSerializer,
-    CategorySerializer,
-    GenreSerializer,
-    CommentSerializer,
-    ReviewSerializer,
-    UserSerializer,
-    SignUpSerializer,
-    TokenSerializer
-)
-
 from api.permissions import IsAdmin, IsAdminModeratorAuthor
+from api.serializers import (
+    CategorySerializer,
+    CommentSerializer,
+    GenreSerializer,
+    ReviewSerializer,
+    SignUpSerializer,
+    TitleSerializer,
+    TokenSerializer,
+    UserSerializer,
+)
+from reviews.models import Category, Genre, Review, Title, User
 
 
 class GenreViewSet(viewsets.ModelViewSet):
