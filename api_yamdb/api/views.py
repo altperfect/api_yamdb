@@ -87,7 +87,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    """Вьюсет пользователя."""
+    """
+    Вьюсет для управления пользователями.
+    Доступ на создание: только у администратора.
+    Доступ на редактирование: у зарегистрированных пользователей.
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsAdmin,)
