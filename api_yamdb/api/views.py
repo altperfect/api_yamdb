@@ -39,14 +39,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     Получение списка произведений доступно без токена.
     Админ создает и редактирует.
     """
-    queryset = Title.objects.annotate(
-        review_rating=Avg('reviews__score'),
-        rating=Avg("reviews__score")
-    ).select_related(
-        "category"
-    ).prefetch_related(
-        "genre"
-    ).all()
+    queryset = Title.objects.all()
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
 
