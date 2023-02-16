@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db import IntegrityError
-from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
@@ -10,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
 
-from api.permissions import IsAdmin, IsAdminModeratorAuthor
+from api.permissions import IsAdmin, IsAdminModeratorAuthor, IsAdminOrReadOnly
 from api.serializers import (
     CategorySerializer,
     CommentSerializer,
@@ -25,31 +24,33 @@ from reviews.models import Category, Genre, Review, Title, User
 
 
 class GenreViewSet(viewsets.ModelViewSet):
-    """Вьюсет жанров."""
+    """
+    Получение списка жанров доступно без токена.
+    Админ создает и редактирует.
+    """
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (IsAdmin,)
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    """Вьюсет произведений."""
-    queryset = Title.objects.annotate(
-        review_rating=Avg('reviews__score'),
-        rating=Avg("reviews__score")
-    ).select_related(
-        "category"
-    ).prefetch_related(
-        "genre"
-    ).all()
+    """
+    Получение списка произведений доступно без токена.
+    Админ создает и редактирует.
+    """
+    queryset = Title.objects.all()
     serializer_class = TitleSerializer
-    permission_classes = (IsAdmin,)
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
-    """Вьюсет категорий."""
+    """
+    Получение списка категорий доступно без токена.
+    Админ создает и редактирует.
+    """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAdmin,)
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
