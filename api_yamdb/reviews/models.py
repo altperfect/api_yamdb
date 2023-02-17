@@ -87,8 +87,15 @@ class User(AbstractUser):
 
 class Category(models.Model):
     """Модель категорий произведений."""
-    name = models.CharField(max_length=200, verbose_name='название')
-    slug = models.SlugField(unique=True, verbose_name='ссылка')
+    name = models.CharField(
+        max_length=256,
+        verbose_name='название'
+    )
+    slug = models.SlugField(
+        max_length=50,
+        unique=True,
+        verbose_name='ссылка'
+    )
 
     class Meta():
         ordering = ('name',)

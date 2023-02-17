@@ -12,6 +12,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
 
 from api.filters import TitleGenreFilter
+from api.mixins import RetrieveDisabledMixin
 from api.permissions import IsAdmin, IsAdminModeratorAuthor, IsAdminOrReadOnly
 from api.serializers import (
     CategorySerializer,
@@ -64,7 +65,7 @@ class TitleViewSet(viewsets.ModelViewSet):
         return TitleSerializer
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(RetrieveDisabledMixin):
     """
     Получение списка категорий доступно без токена.
     Админ создает и редактирует.
