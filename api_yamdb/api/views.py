@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
 
+from api.mixins import RetrieveDisabledMixin
 from api.permissions import IsAdmin, IsAdminModeratorAuthor, IsAdminOrReadOnly
 from api.serializers import (
     CategorySerializer,
@@ -23,7 +24,7 @@ from api.serializers import (
 from reviews.models import Category, Genre, Review, Title, User
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(RetrieveDisabledMixin):
     """
     Получение списка жанров доступно без токена.
     Админ создает и редактирует.
@@ -33,6 +34,7 @@ class GenreViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (SearchFilter,)
     search_fields = ('name',)
+    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -55,7 +57,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (SearchFilter,)
     search_fields = ('name',)
-    
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     """
