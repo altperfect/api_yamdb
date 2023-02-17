@@ -1,7 +1,9 @@
+from django.db.models.aggregates import Avg
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
@@ -9,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
 
+from api.filters import TitleGenreFilter
 from api.permissions import IsAdmin, IsAdminModeratorAuthor, IsAdminOrReadOnly
 from api.serializers import (
     CategorySerializer,
@@ -17,6 +20,7 @@ from api.serializers import (
     ReviewSerializer,
     SignUpSerializer,
     TitleSerializer,
+    TitleRetrieveSerializer,
     TokenSerializer,
     UserSerializer,
 )
@@ -40,9 +44,24 @@ class TitleViewSet(viewsets.ModelViewSet):
     Получение списка произведений доступно без токена.
     Админ создает и редактирует.
     """
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(
+        rating=Avg("reviews__score")
+    ).select_related(
+        "category"
+    ).prefetch_related(
+        "genre"
+    ).order_by('-id').all()
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitleGenreFilter
+    ordering_fields = ('name',)
+    ordering = ('name',)
+
+    def get_serializer_class(self):
+        if self.action in ("list", "retrieve"):
+            return TitleRetrieveSerializer
+        return TitleSerializer
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -55,7 +74,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (SearchFilter,)
     search_fields = ('name',)
-    
+    lookup_field = 'slug'
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     """
