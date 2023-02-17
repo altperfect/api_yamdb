@@ -51,7 +51,9 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
-
+    filter_backends = (SearchFilter,)
+    search_fields = ('name',)
+    
 
 class CommentViewSet(viewsets.ModelViewSet):
     """
