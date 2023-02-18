@@ -47,11 +47,6 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        """Проверяем наличие прав суперюзера."""
-        return self.role == self.is_superuser
-
-    @property
-    def is_admin(self):
         """Проверяем наличие прав администратора."""
         return self.role == self.ADMIN
 
