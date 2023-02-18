@@ -1,4 +1,3 @@
-from django.db.models import Avg
 from django.utils import timezone
 from rest_framework import serializers
 
@@ -7,61 +6,6 @@ from reviews.validators import (
     me_username_forbidden_validator,
     username_validator
 )
-
-
-class TitleSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели произведений."""
-    genre = serializers.SlugRelatedField(
-        slug_field='slug', many=True, queryset=Genre.objects.all()
-    )
-    category = serializers.SlugRelatedField(
-        slug_field='slug', queryset=Category.objects.all()
-    )
-    rating = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Title
-        fields = ("id", "name", "year", "description",
-                  "genre", "category", "rating")
-
-    def validate_year(self, value):
-        """
-        Проверка года выпуска. 
-        Год должен быть не позже текущего года.
-        """
-        current_year = timezone.now().year
-        if value > current_year:
-            raise serializers.ValidationError(
-                'Проверьте дату создания произведения'
-            )
-        return value
-
-    def validate_title(self, validated_data):
-        """Проверка произведения на дубликат."""
-        request = self.context.get("request")
-        if request and request.method == "POST":
-            if Title.objects.filter(
-                name=validated_data.get("name"),
-                category=validated_data.get("category")
-            ).exists():
-                raise serializers.ValidationError(
-                    "Произведение уже существует.")
-        return validated_data
-
-    def get_rating(self, obj):
-        """Получаем средний рейтинг произведения."""
-        try:
-            rating = obj.reviews.aggregate(Avg('score'))
-            return rating.get('score__avg')
-        except TypeError:
-            return None
-
-
-class CategorySerializer(serializers.ModelSerializer):
-    """Сериализатор для модели категорий."""
-    class Meta:
-        model = Category
-        fields = ('name', 'slug')
 
 
 class GenreSerializer(serializers.ModelSerializer):
@@ -108,6 +52,67 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
         model = Review
         read_only_fields = ('id', 'created')
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    """Сериализатор для модели категорий."""
+    class Meta:
+        model = Category
+        fields = ('name', 'slug')
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    """Сериализатор для создания и обновления произведений."""
+    genre = serializers.SlugRelatedField(
+        slug_field='slug', many=True, queryset=Genre.objects.all()
+    )
+    category = serializers.SlugRelatedField(
+        slug_field='slug', queryset=Category.objects.all()
+    )
+
+    class Meta:
+        model = Title
+        fields = ("id", "name", "year", "description",
+                  "genre", "category",)
+
+    def validate_year(self, value):
+        """
+        Проверка года выпуска.
+        Год должен быть не позже текущего года.
+        """
+        current_year = timezone.now().year
+        if value > current_year:
+            raise serializers.ValidationError(
+                'Проверьте дату создания произведения'
+            )
+        return value
+
+    def validate_title(self, validated_data):
+        """Проверка произведения на дубликат."""
+        request = self.context.get("request")
+        if request and request.method == "POST":
+            if Title.objects.filter(
+                name=validated_data.get("name"),
+                category=validated_data.get("category")
+            ).exists():
+                raise serializers.ValidationError(
+                    "Произведение уже существует.")
+        return validated_data
+
+
+class TitleRetrieveSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели произведений,
+    используется в ReadOnly сценариях.
+    """
+    genre = GenreSerializer(many=True)
+    category = CategorySerializer()
+    rating = serializers.IntegerField()
+
+    class Meta:
+        model = Title
+        fields = ("id", "name", "year", "description",
+                  "genre", "category", "rating",)
 
 
 class CommentSerializer(serializers.ModelSerializer):
