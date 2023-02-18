@@ -86,7 +86,7 @@ class Category(models.Model):
     slug = models.SlugField(unique=True, verbose_name='ссылка')
 
     class Meta():
-        ordering = ('name',)
+        ordering = ('-id',)
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
@@ -104,7 +104,7 @@ class Genre(models.Model):
     slug = models.SlugField(unique=True, verbose_name='ссылка')
 
     class Meta():
-        ordering = ('name',)
+        ordering = ('-id',)
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
 
@@ -141,7 +141,7 @@ class Title(models.Model):
     )
 
     class Meta():
-        ordering = ('-year',)
+        ordering = ('-id',)
         verbose_name = 'Произведения'
         verbose_name_plural = 'Произведения'
 
