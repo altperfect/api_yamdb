@@ -10,41 +10,47 @@ from reviews.validators import (
 
 class CategorySerializer(serializers.ModelSerializer):
     """Сериализатор для модели категорий."""
+
     class Meta:
         model = Category
-        fields = ('name', 'slug')
+        fields = ("name", "slug")
 
 
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализатор для модели комментариев."""
+
     author = serializers.SlugRelatedField(
-        slug_field='username', read_only=True
+        slug_field="username",
+        read_only=True
     )
     review = serializers.SlugRelatedField(
-        slug_field='text', read_only=True
+        slug_field="text",
+        read_only=True
     )
 
     class Meta:
-        fields = ('id', 'review', 'author', 'text', 'pub_date')
+        fields = ("id", "review", "author", "text", "pub_date")
         model = Comment
-        read_only_fields = ('id', 'pub_date')
+        read_only_fields = ("id", "pub_date")
 
 
 class GenreSerializer(serializers.ModelSerializer):
     """Сериализатор для модели жанров."""
+
     class Meta:
         model = Genre
-        fields = ('name', 'slug')
+        fields = ("name", "slug")
 
 
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализатор для модели отзывов."""
+
     author = serializers.SlugRelatedField(
-        slug_field='username',
+        slug_field="username",
         read_only=True
     )
     title = serializers.SlugRelatedField(
-        slug_field='name',
+        slug_field="name",
         read_only=True
     )
 
@@ -52,7 +58,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         """Проверка оценки на соответствие 10-бальной шкале."""
         if 0 > value > 10:
             raise serializers.ValidationError(
-                'Оценка должна быть по 10-бальной шкале!'
+                "Оценка должна быть по 10-бальной шкале!"
             )
         return value
 
@@ -71,24 +77,24 @@ class ReviewSerializer(serializers.ModelSerializer):
         return data
 
     class Meta:
-        fields = ('id', 'title', 'text', 'author', 'score', 'pub_date')
+        fields = ("id", "title", "text", "author", "score", "pub_date")
         model = Review
-        read_only_fields = ('id', 'pub_date')
+        read_only_fields = ("id", "pub_date")
 
 
 class TitleSerializer(serializers.ModelSerializer):
     """Сериализатор для создания и обновления произведений."""
+
     genre = serializers.SlugRelatedField(
-        slug_field='slug', many=True, queryset=Genre.objects.all()
+        slug_field="slug", many=True, queryset=Genre.objects.all()
     )
     category = serializers.SlugRelatedField(
-        slug_field='slug', queryset=Category.objects.all()
+        slug_field="slug", queryset=Category.objects.all()
     )
 
     class Meta:
         model = Title
-        fields = ("id", "name", "year", "description",
-                  "genre", "category")
+        fields = ("id", "name", "year", "description", "genre", "category")
 
     def validate_year(self, value):
         """
@@ -98,7 +104,7 @@ class TitleSerializer(serializers.ModelSerializer):
         current_year = timezone.now().year
         if value > current_year:
             raise serializers.ValidationError(
-                'Проверьте дату создания произведения'
+                "Проверьте дату создания произведения."
             )
         return value
 
@@ -111,7 +117,8 @@ class TitleSerializer(serializers.ModelSerializer):
                 category=validated_data.get("category")
             ).exists():
                 raise serializers.ValidationError(
-                    "Произведение уже существует.")
+                    "Произведение уже существует."
+                )
         return validated_data
 
 
@@ -120,21 +127,31 @@ class TitleRetrieveSerializer(serializers.ModelSerializer):
     Сериализатор для модели произведений,
     используется в ReadOnly сценариях.
     """
+
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
     rating = serializers.IntegerField()
 
     class Meta:
         model = Title
-        fields = ("id", "name", "year", "description",
-                  "genre", "category", "rating",)
+        fields = (
+            "id",
+            "name",
+            "year",
+            "description",
+            "genre",
+            "category",
+            "rating",
+        )
 
 
 class SignUpSerializer(serializers.Serializer):
     """Сериализатор для регистрации."""
+
     email = serializers.EmailField(max_length=254)
     username = serializers.CharField(
-        max_length=150, validators=(
+        max_length=150,
+        validators=(
             me_username_forbidden_validator,
             username_validator
         )
@@ -146,9 +163,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = (
-            "username", "first_name", "last_name", "email", "bio", "role"
-        )
+        fields = ("username", "first_name", "last_name",
+                  "email", "bio", "role")
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
@@ -156,9 +172,10 @@ class UserSerializer(serializers.ModelSerializer):
 
 class TokenSerializer(serializers.ModelSerializer):
     """Сериализатор для создания JWT-токена."""
+
     username = serializers.CharField()
     confirmation_code = serializers.CharField()
 
     class Meta:
         model = User
-        fields = ('username', 'confirmation_code')
+        fields = ("username", "confirmation_code")

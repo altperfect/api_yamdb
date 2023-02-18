@@ -11,6 +11,6 @@ def me_username_forbidden_validator(value):
 
 def username_validator(value):
     """Проверяем юзернейм на соответствие паттерну."""
-    pattern = r'^^[\w.@+-]+\Z'
+    pattern = r"^^[\w.@+-]+\Z"
     if not re.search(pattern, value):
         raise ValidationError("Некорректный никнейм.")

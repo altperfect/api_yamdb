@@ -9,6 +9,7 @@ class TitleGenreFilter(django_filters.FilterSet):
     Реализует возможность фильтрации по полю 'genre'
     с использованием параметра 'slug' жанра.
     """
+
     name = django_filters.CharFilter(
         field_name="name",
         lookup_expr="icontains"

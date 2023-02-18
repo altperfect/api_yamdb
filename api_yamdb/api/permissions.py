@@ -3,6 +3,7 @@ from rest_framework import permissions
 
 class IsAdmin(permissions.BasePermission):
     """Проверка пользователя на наличие прав администратора."""
+
     message = "Пользователь не администратор."
 
     def has_permission(self, request, view):
@@ -17,6 +18,7 @@ class IsAdminOrReadOnly(permissions.BasePermission):
     для создания и редактирования записей.
     Если прав админа нет, то доступен только просмотр.
     """
+
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
             return True
@@ -25,8 +27,7 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         return False
 
     def has_object_permission(self, request, view, obj):
-        if (request.method in permissions.SAFE_METHODS
-                or request.user.is_admin):
+        if request.method in permissions.SAFE_METHODS or request.user.is_admin:
             return True
         return False
 
@@ -36,6 +37,7 @@ class IsAdminModeratorAuthor(permissions.BasePermission):
     Проверка пользователя на наличие одного из типов прав:
     администратора, модератора или автора.
     """
+
     def has_permission(self, request, view):
         return (
             request.method in permissions.SAFE_METHODS

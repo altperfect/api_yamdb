@@ -5,11 +5,12 @@ class RetrieveDisabledMixin(
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     mixins.ListModelMixin,
-    viewsets.GenericViewSet
+    viewsets.GenericViewSet,
 ):
     """
     Кастомный mixin,
     отключающий возможность получения и обновления
     одного объекта (retrieve и patch).
     """
+
     pass

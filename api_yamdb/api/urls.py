@@ -14,34 +14,34 @@ from api.views import (
 
 v1_router = DefaultRouter()
 v1_router.register(
-    'categories',
+    "categories",
     CategoryViewSet,
-    basename='categories'
+    basename="categories"
 )
 v1_router.register(
-    r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
+    r"titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments",
     CommentViewSet,
-    basename='comments'
+    basename="comments",
 )
 v1_router.register(
-    'genres',
+    "genres",
     GenreViewSet,
-    basename='genres'
+    basename="genres"
 )
 v1_router.register(
-    r'titles/(?P<title_id>\d+)/reviews',
+    r"titles/(?P<title_id>\d+)/reviews",
     ReviewViewSet,
-    basename='reviews'
+    basename="reviews"
 )
 v1_router.register(
-    'titles',
+    "titles",
     TitleViewSet,
-    basename='titles'
+    basename="titles"
 )
 v1_router.register(
-    'users',
+    "users",
     UserViewSet,
-    basename='users'
+    basename="users"
 )
 
 
