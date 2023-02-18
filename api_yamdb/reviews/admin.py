@@ -3,17 +3,31 @@ from django.contrib import admin
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
 
-class UserAdmin(admin.ModelAdmin):
+class CategoryAdmin(admin.ModelAdmin):
     list_display = (
-        'id',
-        'username',
-        'email',
-        'bio',
-        'role',
+        'name',
     )
-    search_fields = ('username', 'role',)
-    list_filter = ('username',)
-    empty_value_display = '-пусто-'
+    list_filter = ('name',)
+    search_fields = ('name',)
+
+
+class CommentAdmin(admin.ModelAdmin):
+    list_display = (
+        'author',
+        'review',
+        'text',
+        'pub_date',
+    )
+    list_filter = ('pub_date',)
+    search_fields = ('author', 'review', 'text')
+
+
+class GenreAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+    )
+    list_filter = ('name',)
+    search_fields = ('name',)
 
 
 class ReviewAdmin(admin.ModelAdmin):
@@ -28,17 +42,6 @@ class ReviewAdmin(admin.ModelAdmin):
     search_fields = ('title', 'author', 'review', 'text')
 
 
-class CommentAdmin(admin.ModelAdmin):
-    list_display = (
-        'author',
-        'review',
-        'text',
-        'pub_date',
-    )
-    list_filter = ('pub_date',)
-    search_fields = ('author', 'review', 'text')
-
-
 class TitleAdmin(admin.ModelAdmin):
     list_display = (
         'name',
@@ -49,25 +52,22 @@ class TitleAdmin(admin.ModelAdmin):
     search_fields = ('name', 'category', 'genre', 'description')
 
 
-class GenreAdmin(admin.ModelAdmin):
+class UserAdmin(admin.ModelAdmin):
     list_display = (
-        'name',
+        'id',
+        'username',
+        'email',
+        'bio',
+        'role',
     )
-    list_filter = ('name',)
-    search_fields = ('name',)
+    search_fields = ('username', 'role',)
+    list_filter = ('username',)
+    empty_value_display = '-пусто-'
 
 
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = (
-        'name',
-    )
-    list_filter = ('name',)
-    search_fields = ('name',)
-
-
-admin.site.register(User, UserAdmin)
-admin.site.register(Review, ReviewAdmin)
-admin.site.register(Comment, CommentAdmin)
-admin.site.register(Title, TitleAdmin)
-admin.site.register(Genre, GenreAdmin)
 admin.site.register(Category, CategoryAdmin)
+admin.site.register(Comment, CommentAdmin)
+admin.site.register(Genre, GenreAdmin)
+admin.site.register(Review, ReviewAdmin)
+admin.site.register(Title, TitleAdmin)
+admin.site.register(User, UserAdmin)

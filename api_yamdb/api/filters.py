@@ -14,12 +14,17 @@ class TitleGenreFilter(django_filters.FilterSet):
         lookup_expr="icontains"
     )
     genre = django_filters.CharFilter(
-        field_name="genre__slug"
+        field_name="genre__slug",
+        lookup_expr="icontains"
     )
     category = django_filters.CharFilter(
-        field_name="category__slug"
+        field_name="category__slug",
+        lookup_expr="icontains"
     )
-    year = django_filters.NumberFilter
+    year = django_filters.NumberFilter(
+        field_name="year",
+        lookup_expr="icontains"
+    )
 
     class Meta:
         model = Title

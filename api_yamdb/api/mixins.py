@@ -10,5 +10,6 @@ class RetrieveDisabledMixin(
     """
     Кастомный mixin,
     отключающий возможность получения и обновления
-    одного объекта (retrieve и patch)."""
+    одного объекта (retrieve и patch).
+    """
     pass

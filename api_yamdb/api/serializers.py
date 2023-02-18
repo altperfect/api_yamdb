@@ -8,6 +8,28 @@ from reviews.validators import (
 )
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    """Сериализатор для модели категорий."""
+    class Meta:
+        model = Category
+        fields = ('name', 'slug')
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели комментариев."""
+    author = serializers.SlugRelatedField(
+        slug_field='username', read_only=True
+    )
+    review = serializers.SlugRelatedField(
+        slug_field='text', read_only=True
+    )
+
+    class Meta:
+        fields = ('id', 'review', 'author', 'text', 'pub_date')
+        model = Comment
+        read_only_fields = ('id', 'pub_date')
+
+
 class GenreSerializer(serializers.ModelSerializer):
     """Сериализатор для модели жанров."""
     class Meta:
@@ -49,16 +71,9 @@ class ReviewSerializer(serializers.ModelSerializer):
         return data
 
     class Meta:
-        fields = '__all__'
+        fields = ('id', 'title', 'text', 'author', 'score', 'pub_date')
         model = Review
-        read_only_fields = ('id', 'created')
-
-
-class CategorySerializer(serializers.ModelSerializer):
-    """Сериализатор для модели категорий."""
-    class Meta:
-        model = Category
-        fields = ('name', 'slug')
+        read_only_fields = ('id', 'pub_date')
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -73,7 +88,7 @@ class TitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
         fields = ("id", "name", "year", "description",
-                  "genre", "category",)
+                  "genre", "category")
 
     def validate_year(self, value):
         """
@@ -115,21 +130,6 @@ class TitleRetrieveSerializer(serializers.ModelSerializer):
                   "genre", "category", "rating",)
 
 
-class CommentSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели комментариев."""
-    author = serializers.SlugRelatedField(
-        slug_field='username', read_only=True
-    )
-    review = serializers.SlugRelatedField(
-        slug_field='text', read_only=True
-    )
-
-    class Meta:
-        fields = '__all__'
-        model = Comment
-        read_only_fields = ('id', 'created')
-
-
 class SignUpSerializer(serializers.Serializer):
     """Сериализатор для регистрации."""
     email = serializers.EmailField(max_length=254)
@@ -147,7 +147,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
-            "username", "first_name", "last_name", "email", "bio", "role",
+            "username", "first_name", "last_name", "email", "bio", "role"
         )
 
     def create(self, validated_data):
@@ -161,4 +161,4 @@ class TokenSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'confirmation_code',)
+        fields = ('username', 'confirmation_code')

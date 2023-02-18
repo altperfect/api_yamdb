@@ -30,44 +30,6 @@ from api.serializers import (
 from reviews.models import Category, Genre, Review, Title, User
 
 
-class GenreViewSet(RetrieveDisabledMixin):
-    """
-    Получение списка жанров доступно без токена.
-    Админ создает и редактирует.
-    """
-    queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (SearchFilter,)
-    search_fields = ('name',)
-    lookup_field = 'slug'
-
-
-class TitleViewSet(viewsets.ModelViewSet):
-    """
-    Получение списка произведений доступно без токена.
-    Админ создает и редактирует.
-    """
-    queryset = Title.objects.annotate(
-        rating=Avg("reviews__score")
-    ).select_related(
-        "category"
-    ).prefetch_related(
-        "genre"
-    ).order_by('-id').all()
-    serializer_class = TitleSerializer
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = TitleGenreFilter
-    ordering_fields = ('name',)
-    ordering = ('name',)
-
-    def get_serializer_class(self):
-        if self.action in ("list", "retrieve"):
-            return TitleRetrieveSerializer
-        return TitleSerializer
-
-
 class CategoryViewSet(RetrieveDisabledMixin):
     """
     Получение списка категорий доступно без токена.
@@ -98,6 +60,19 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, review=review)
 
 
+class GenreViewSet(RetrieveDisabledMixin):
+    """
+    Получение списка жанров доступно без токена.
+    Админ создает и редактирует.
+    """
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (SearchFilter,)
+    search_fields = ('name',)
+    lookup_field = 'slug'
+
+
 class ReviewViewSet(viewsets.ModelViewSet):
     """
     Создание и обработка отзывов.
@@ -113,6 +88,31 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         title = get_object_or_404(Title, id=self.kwargs.get('title_id'))
         serializer.save(author=self.request.user, title=title)
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    """
+    Получение списка произведений доступно без токена.
+    Админ создает и редактирует.
+    """
+    queryset = Title.objects.annotate(
+        rating=Avg("reviews__score")
+    ).select_related(
+        "category"
+    ).prefetch_related(
+        "genre"
+    ).order_by('-id').all()
+    serializer_class = TitleSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitleGenreFilter
+    ordering_fields = ('name',)
+    ordering = ('name',)
+
+    def get_serializer_class(self):
+        if self.action in ("list", "retrieve"):
+            return TitleRetrieveSerializer
+        return TitleSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
