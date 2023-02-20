@@ -1,6 +1,5 @@
-import csv
+from csv import DictReader
 
-from api_yamdb.settings import BASE_DIR
 from django.core.management.base import BaseCommand
 
 from reviews.models import(
@@ -28,13 +27,19 @@ class Command(BaseCommand):
     help = "Импорт данных из файлов csv в базу данных"
 
     def handle(self, *args, **options):
-        for base in CSV_DICT.items():
+        for model, table in CSV_DICT.items():
             with open(
-                f"{BASE_DIR}/static/data/{base}"
+                f"./static/data/{table}"
             ) as csv_files:
-                csv_reader = csv.DictReader(csv_files)
-            csv_reader.save()
+                csv_reader = DictReader(csv_files)
+                model.objects.bulk_create(
+                    model(**data) for data in csv_reader
+                )
+        self.stdout.write(self.style.SUCCESS('Данные загружены!'))
 
-        with open(f"{BASE_DIR}/static/data/genre_title.csv") as f:
-            csv_genre_title = csv.DictReader(f)
-            csv_genre_title.save()
+        with open(f"./static/data/genre_title.csv") as csv_file:
+            csv_genre_title = DictReader(csv_file)
+            model.objects.bulk_create(
+                model(**data) for data in csv_genre_title
+            )
+        self.stdout.write(self.style.SUCCESS('Данные загружены!'))
