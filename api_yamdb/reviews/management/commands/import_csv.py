@@ -24,7 +24,7 @@ def db_clear():
             model.objects.all().delete()
 
 
-def read_table(table) -> list:
+def read_table(table: str) -> list:
     """Считывает данные из csv и возвращает список строк таблицы."""
     path = f"./static/data/{table}"
     with open(path, encoding="utf-8") as csv_file:
@@ -34,12 +34,13 @@ def read_table(table) -> list:
 
 def get_model_fields(model) -> dict:
     """Функция возвращает поля модели."""
+    print(type(model))
     fields_list = model._meta.fields
     fields = {field.name: field.attname for field in fields_list}
     return fields
 
 
-def vet_fields(fields, table):
+def vet_fields(fields: dict, table: str):
     """Корректирует название полей в таблице."""
     for row in table:
         for field_name in list(row):
@@ -50,7 +51,7 @@ def vet_fields(fields, table):
                 row[fields[field_name]] = row.pop(field_name)
 
 
-def import_data(model, table):
+def import_data(model, table: str):
     """
     Сопоставляет имя файла с именем модели
     и загружает данные.
