@@ -6,7 +6,7 @@ from django.db.utils import IntegrityError
 
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
-CSV_DICT = {
+CSV_DICT: dict = {
     User: "users.csv",
     Category: "category.csv",
     Genre: "genre.csv",
