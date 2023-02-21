@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from reviews.models import Category, Comment, Genre, Review, Title, User
 from reviews.validators import (
-    me_username_forbidden_validator,
+    forbidden_username_validator,
     username_validator
 )
 
@@ -134,28 +134,30 @@ class TitleRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = (
-            "id",
-            "name",
-            "year",
-            "description",
-            "genre",
-            "category",
-            "rating",
-        )
+        fields = ("__all__")
 
 
 class SignUpSerializer(serializers.Serializer):
-    """Сериализатор для регистрации."""
+    """
+    Сериализатор для регистрации.
+    Использовать служебное имя "me" запрещено.
+    """
 
     email = serializers.EmailField(max_length=254)
     username = serializers.CharField(
         max_length=150,
         validators=(
-            me_username_forbidden_validator,
+            forbidden_username_validator,
             username_validator
         )
     )
+
+    def validate(self, data):
+        if data["username"] == "me":
+            raise serializers.ValidationError(
+                "Нельзя использовать логин 'me'."
+            )
+        return data
 
 
 class UserSerializer(serializers.ModelSerializer):

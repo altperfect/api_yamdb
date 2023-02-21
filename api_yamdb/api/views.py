@@ -100,8 +100,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
     queryset = (
         Title.objects.annotate(rating=Avg("reviews__score"))
-        .select_related("category")
-        .prefetch_related("genre")
+        .prefetch_related("category", "genre")
         .order_by("-id")
         .all()
     )
@@ -135,21 +134,28 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=False,
-        methods=["GET", "PATCH"],
+        methods=["GET"],
         permission_classes=(permissions.IsAuthenticated,),
         url_path="me",
     )
-    def me(self, request):
-        if request.method == "PATCH":
-            serializer = UserSerializer(
-                request.user,
-                data=request.data,
-                partial=True
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save(role=request.user.role)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, request):
         serializer = UserSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(
+        detail=False,
+        methods=["PATCH"],
+        permission_classes=(permissions.IsAuthenticated,),
+        url_path="update_me",
+    )
+    def patch(self, request):
+        serializer = UserSerializer(
+            request.user,
+            data=request.data,
+            partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save(role=request.user.role)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
