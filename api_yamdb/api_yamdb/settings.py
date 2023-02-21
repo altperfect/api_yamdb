@@ -2,13 +2,17 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS")
 
 
 INSTALLED_APPS = [
@@ -129,3 +133,4 @@ DEBUG_MAIL = "debug@debug.com"
 
 REVIEW_CUT: int = 50
 COMMENT_CUT: int = 30
+RESERVED_USERNAMES: "list[str]" = ["me"]
