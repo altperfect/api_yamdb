@@ -77,7 +77,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         return data
 
     class Meta:
-        fields = ("id", "title", "text", "author", "score", "pub_date")
+        fields = "__all__"
         model = Review
         read_only_fields = ("id", "pub_date")
 
@@ -94,7 +94,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ("id", "name", "year", "description", "genre", "category")
+        fields = "__all__"
 
     def validate_year(self, value):
         """
@@ -134,7 +134,7 @@ class TitleRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ("__all__")
+        fields = "__all__"
 
 
 class SignUpSerializer(serializers.Serializer):
