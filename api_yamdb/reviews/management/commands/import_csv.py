@@ -34,7 +34,6 @@ def read_table(table: str) -> list:
 
 def get_model_fields(model) -> dict:
     """Функция возвращает поля модели."""
-    print(type(model))
     fields_list = model._meta.fields
     fields = {field.name: field.attname for field in fields_list}
     return fields
