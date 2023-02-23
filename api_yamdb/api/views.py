@@ -138,17 +138,12 @@ class UserViewSet(viewsets.ModelViewSet):
         permission_classes=(permissions.IsAuthenticated,),
         url_path="me",
     )
-    def get(self, request):
+    def me(self, request):
         serializer = UserSerializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(
-        detail=False,
-        methods=["PATCH"],
-        permission_classes=(permissions.IsAuthenticated,),
-        url_path="update_me",
-    )
-    def patch(self, request):
+    @me.mapping.patch
+    def update_me(self, request):
         serializer = UserSerializer(
             request.user,
             data=request.data,
